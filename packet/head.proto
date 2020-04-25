@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package packet;
+
+message Head {
+	string Name = 1;
+	//int32 Sequence = 2;
+}
+
+message TheTestMsg {
+	int32 A = 1;
+	int64 B = 2;
+	string C = 3;
+}
