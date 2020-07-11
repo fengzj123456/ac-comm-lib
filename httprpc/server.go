@@ -78,7 +78,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Response: w,
 	}
 	if err := next(ctx, w, r); err != nil {
-		s.setError(w, err)
+		s.setError(w, err, r)
 	}
 }
 
@@ -218,7 +218,7 @@ func (s *Server) setResponseHeader(w http.ResponseWriter, ctx context.Context, r
 	}
 }
 
-func (s *Server) setError(w http.ResponseWriter, err error) {
+func (s *Server) setError(w http.ResponseWriter, err error, r *http.Request) {
 	code, cause, stack := GetErrorCode(err), GetErrorCause(err), GetErrorStack(err)
 	er := errReply{
 		Code:  int(code),
@@ -227,6 +227,7 @@ func (s *Server) setError(w http.ResponseWriter, err error) {
 		Stack: string(stack),
 	}
 	setHeaderContentType(w.Header(), s.codec.ContentType())
+	setCors(w.Header(), r.Header.Get("Origin"))
 	w.WriteHeader(code.Status())
 	s.codec.Encode(w, er)
 }
